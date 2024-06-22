@@ -8,10 +8,12 @@ import { useRouter } from 'vue-router'
 
 const input = reactive({
   title: '',
-  content: ''
+  content: '',
+  image: null
 })
 
 const isLoading = ref(false)
+const previewImage = ref(null)
 const router = useRouter()
 
 const createBlog = async () => {
@@ -42,6 +44,17 @@ const createBlog = async () => {
     isLoading.value = false
   }
 }
+
+const handleImageChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    previewImage.value = URL.createObjectURL(file)
+    input.image = file
+  } else {
+    previewImage.value = null
+    input.image = null
+  }
+}
 </script>
 
 <template>
@@ -65,7 +78,8 @@ const createBlog = async () => {
         input-name="blogContent"
       />
 
-      <input type="file" name="image" id="image" />
+      <input type="file" name="image" id="image" @change="handleImageChange" />
+      <img v-if="previewImage" :src="previewImage" alt="preview image" />
       <button type="submit" class="btn btn-primary mt-6 w-full flex items-center justify-center">
         <div v-if="isLoading">
           <svg
